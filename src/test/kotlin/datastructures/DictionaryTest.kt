@@ -3,6 +3,7 @@ package datastructures
 import org.junit.Test
 
 import org.junit.Assert.*
+import utils.Option
 import utils.getOrThrow
 
 class DictionaryTest {
@@ -30,6 +31,7 @@ class DictionaryTest {
         assertEquals("One", dictionary[1].getOrThrow())
         assertEquals("Two", dictionary[2].getOrThrow())
         assertEquals("Three", dictionary[3].getOrThrow())
+        assertEquals(Option.None, dictionary[4])
     }
 
     @Test

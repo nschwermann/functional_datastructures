@@ -83,7 +83,7 @@ class Dictionary<KEY , VALUE>{
     private fun search(tree: BinTree<Cons<KEY, VALUE>>, key: KEY) : Option<BinTree<Cons<KEY, VALUE>>> = when(tree){
         is BinTree.Leaf -> Option.None
         is BinTree.Branch -> when{
-            tree.root.car == key -> tree.some()//Option.Some(tree.root.cdr)
+            tree.root.car == key -> tree.some()
             key.hashCode() < tree.root.car.hashCode() -> search(tree.left, key)
             else -> search(tree.right, key)
         }
