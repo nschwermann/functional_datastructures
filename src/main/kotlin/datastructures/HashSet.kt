@@ -12,6 +12,12 @@ class HashSet<T> {
                 }
             }
         }
+
+        operator fun <T>invoke(vararg args: T) : HashSet<T>{
+            return HashSet<T>().apply {
+                args.forEach { insert(it) }
+            }
+        }
     }
 
     fun insert(data : T) : HashSet<T> = apply {
@@ -22,6 +28,9 @@ class HashSet<T> {
         return value.hashCode() in lookup
     }
 
+    fun remove(data : T){
+        lookup.delete(data.hashCode())
+    }
 
     override fun toString(): String {
         return buildString {

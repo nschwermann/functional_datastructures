@@ -1,6 +1,9 @@
 package datastructures
 
 import utils.Option
+import utils.getOrThrow
+import utils.map
+import utils.some
 
 class Dictionary<KEY , VALUE>{
 
@@ -9,7 +12,7 @@ class Dictionary<KEY , VALUE>{
     companion object{
         operator fun <A ,B> invoke(pairs : Collection<Pair<A, B>>) : Dictionary<A, B> {
             return Dictionary<A, B>().apply{
-                pairs.forEach { set(it.first, it.second)}
+                pairs.forEach { set(it.first, it.second) }
             }
         }
     }
@@ -31,7 +34,37 @@ class Dictionary<KEY , VALUE>{
     }
 
     operator fun get(key : KEY) : Option<VALUE> {
-        return search(tree, key)
+        return search(tree, key).map { it.first().cdr }
+    }
+
+    fun delete(key : KEY) {
+        if(!contains(key)) return
+        val toRemove = search(tree, key).getOrThrow() as BinTree.Branch<Cons<KEY, VALUE>>
+        val replacement = when{
+            toRemove.size == 1 -> BinTree.Leaf
+            toRemove.left is BinTree.Branch && toRemove.right is BinTree.Branch -> toRemove.right.fold(BinTree.Order.InOrder, toRemove.right){next, min ->
+                if(next.car.hashCode() < min.root.car.hashCode()) BinTree(next)
+                else min
+            }
+            toRemove.left is BinTree.Branch -> toRemove.left
+            else -> toRemove.right
+        }
+
+        fun helper(t: BinTree<Cons<KEY, VALUE>>) : BinTree<Cons<KEY,VALUE>> = when(t){
+            is BinTree.Leaf -> t
+            is BinTree.Branch -> {
+                when{
+                    t.root.car.hashCode() == key.hashCode() -> {
+                        if(replacement is BinTree.Leaf) replacement
+                        else BinTree(replacement.first(), helper(t.left), helper(t.right))
+                    }
+                    replacement is BinTree.Branch && t.root.car.hashCode() == replacement.root.car.hashCode() -> BinTree.Leaf
+                    else -> BinTree(t.root, helper(t.left), helper(t.right))
+                }
+            }
+        }
+
+        tree = helper(tree)
     }
 
     operator fun contains(key : KEY) : Boolean{
@@ -47,10 +80,10 @@ class Dictionary<KEY , VALUE>{
         }
     }
 
-    private fun search(tree: BinTree<Cons<KEY, VALUE>>, key: KEY) : Option<VALUE> = when(tree){
+    private fun search(tree: BinTree<Cons<KEY, VALUE>>, key: KEY) : Option<BinTree<Cons<KEY, VALUE>>> = when(tree){
         is BinTree.Leaf -> Option.None
         is BinTree.Branch -> when{
-            tree.root.car == key -> Option.Some(tree.root.cdr)
+            tree.root.car == key -> tree.some()//Option.Some(tree.root.cdr)
             key.hashCode() < tree.root.car.hashCode() -> search(tree.left, key)
             else -> search(tree.right, key)
         }

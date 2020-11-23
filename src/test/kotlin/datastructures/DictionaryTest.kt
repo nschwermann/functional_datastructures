@@ -33,6 +33,14 @@ class DictionaryTest {
     }
 
     @Test
+    fun delete(){
+        dictionary.delete(2)
+        assertTrue(dictionary.contains(1))
+        assertTrue(dictionary.contains(3))
+        assertFalse(dictionary.contains(2))
+    }
+
+    @Test
     fun contains() {
         assertTrue(dictionary.contains(1))
         assertTrue(dictionary.contains(2))
