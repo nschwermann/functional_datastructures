@@ -115,4 +115,17 @@ class LinkedListKtTest {
         assertTrue(LinkedList(1..5).contains(2))
         kotlin.test.assertFalse { LinkedList(1..5).contains(6) }
     }
+
+    @Test
+    fun removeDupes(){
+        val expected = LinkedList(1,2,3,4,5,6)
+        val result = LinkedList(1,2,2,3,4,3,5,6,6).removeDupes()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun isPalindrome(){
+        assertTrue(LinkedList(*"tacocat".toList().toTypedArray()).isPalindrome())
+        assertFalse(LinkedList(*"nathan".toList().toTypedArray()).isPalindrome())
+    }
 }

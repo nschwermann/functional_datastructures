@@ -125,6 +125,11 @@ tailrec fun <T, R> LinkedList<T>.fold(initial : R, acc : (T, R) -> R) : R = when
     else -> cdr.fold(acc(car, initial), acc)
 }
 
+tailrec fun <T, R> LinkedList<T>.fold2(initial: R, acc : (LinkedList<T>, R) -> R) : R = when(this){
+    is LinkedList.Empty -> acc(this, initial)
+    else -> cdr.fold2(acc(this, initial), acc)
+}
+
 fun <T> LinkedList<T>.dropWhile(pred : (T) -> Boolean) : LinkedList<T> = when(this){
     is LinkedList.Empty -> LinkedList.Empty
     else -> if(pred(car)) cdr.dropWhile(pred) else this
@@ -169,5 +174,17 @@ fun <T> LinkedList<T>.last(f : (T) -> Boolean) : Option<T> = fold(Option.None as
     else acc
 }
 
+fun LinkedList<Int>.sum() = fold(0){next, acc -> next + acc}
 
+fun <T>LinkedList<T>.removeDupes() : LinkedList<T> = reverse().fold2(LinkedList.empty()){next, acc ->
+    when(next){
+        is LinkedList.Empty -> acc
+        else -> if(!next.cdr.contains(next.car)) acc.prepend(next.car) else acc
+    }
+}
 
+fun <T> LinkedList<T>.isPalindrome() : Boolean {
+    val firstHalf = take(size/2)
+    val secondHalf = reverse().take(size/2)
+    return firstHalf == secondHalf
+}

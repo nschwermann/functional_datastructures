@@ -6,11 +6,13 @@ plugins {
 }
 group = "me.nschwermann"
 version = "1.0-SNAPSHOT"
+val coroutinesVersion = "1.4.1"
 
 repositories {
     mavenCentral()
 }
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     testImplementation(kotlin("test-junit"))
 }
 tasks.withType<KotlinCompile>() {
@@ -18,4 +20,8 @@ tasks.withType<KotlinCompile>() {
 }
 application {
     mainClassName = "MainKt"
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    freeCompilerArgs = listOf("-Xinline-classes")
 }
