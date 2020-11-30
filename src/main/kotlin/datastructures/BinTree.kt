@@ -165,6 +165,11 @@ fun <A, B>BinTree<A>.map(f : (A) -> B): BinTree<B> = when(this){
     is BinTree.Branch -> BinTree.Branch(f(root), left.map(f), right.map(f))
 }
 
+fun <A> BinTree<A>.forEach(f : (A) -> Unit) : Unit = when(this){
+    is BinTree.Branch -> f(root).also { right.forEach(f) }.also { left.forEach(f) }
+    else -> Unit
+}
+
 fun <A> BinTree<A>.delete(data : A) : BinTree<A> = when(this){
     is BinTree.Leaf -> this
     is BinTree.Branch -> {

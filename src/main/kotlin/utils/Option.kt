@@ -28,6 +28,11 @@ fun <A, B> Option<A>.map(f : (A) -> B) : Option<B> = when(this){
     else -> Option.None
 }
 
+fun <A> Option<A>.forEach(f : (A) -> Unit) : Unit = when(this){
+    is Option.Some -> f(value)
+    else -> Unit
+}
+
 fun <A, B> Option<A>.fMap(f : (A) -> Option<B>) : Option<B> = map(f).orElse { Option.None }
 
 fun <A> Option<A>.orElse(block : () -> A) : A = when(this){

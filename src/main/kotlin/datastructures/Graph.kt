@@ -28,10 +28,10 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
 
     fun addEdge(sourceVertex: T, destinationVertex: T) {
         // Add edge to source vertex / node.
-        edges[sourceVertex].getOrElse(HashSet()).insert(destinationVertex).let {
+        edges[sourceVertex].getOrElse(HashSet()).insert(destinationVertex).also {
             edges[sourceVertex] = it
         }
-        if(!directed) edges[destinationVertex].getOrElse(HashSet()).insert(sourceVertex).let {
+        if(!directed) edges[destinationVertex].getOrElse(HashSet()).insert(sourceVertex).also {
             edges[destinationVertex] = it
         }
     }
@@ -45,8 +45,8 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
             if(vert == end) return true
             if(vert.visited ) continue
             vert.visited = true
-            edges[vert].map {
-                it.toTree().map { node -> queue.add(node) }
+            edges[vert].forEach {
+                it.toTree().forEach { node -> queue.add(node) }
             }
         }
         return false
@@ -54,7 +54,7 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
 
     override fun toString(): String {
         return buildString {
-            edges.toTree().map {
+            edges.toTree().forEach {
                 append(it.car)
                 append('→')
                 append(it.cdr.toString())
@@ -64,9 +64,9 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
     }
 
     private fun resetMeta(){
-        edges.toTree().map { (key, value) ->
+        edges.toTree().forEach { (key, value) ->
             key.visited = false
-            value.toTree().map { it.visited = false }
+            value.toTree().forEach { it.visited = false }
         }
     }
 }
