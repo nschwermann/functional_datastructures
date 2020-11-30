@@ -42,9 +42,13 @@ class Dictionary<KEY , VALUE>{
         val toRemove = search(tree, key).getOrThrow() as BinTree.Branch<Cons<KEY, VALUE>>
         val replacement = when{
             toRemove.size == 1 -> BinTree.Leaf
-            toRemove.left is BinTree.Branch && toRemove.right is BinTree.Branch -> toRemove.right.fold(BinTree.Order.InOrder, toRemove.right){next, min ->
-                if(next.car.hashCode() < min.root.car.hashCode()) BinTree(next)
-                else min
+            toRemove.left is BinTree.Branch && toRemove.right is BinTree.Branch ->
+                //Copy contents of the inorder successor to the node and delete the inorder successor.
+                //The inorder successor is needed only when right child is not empty. In this particular case,
+                //inorder successor can be obtained by finding the minimum value in right child of the node.
+                toRemove.right.fold(BinTree.Order.InOrder, toRemove.right){ next, min ->
+                    if(next.car.hashCode() < min.root.car.hashCode()) BinTree(next)
+                    else min
             }
             toRemove.left is BinTree.Branch -> toRemove.left
             else -> toRemove.right
@@ -54,11 +58,15 @@ class Dictionary<KEY , VALUE>{
             is BinTree.Leaf -> t
             is BinTree.Branch -> {
                 when{
+                    //Rebuilding a new immutable tree, have reached the key we are deleting.
+                    //Replace it with the branch or leaf we found above.
                     t.root.car.hashCode() == key.hashCode() -> {
                         if(replacement is BinTree.Leaf) replacement
                         else BinTree(replacement.first(), helper(t.left), helper(t.right))
                     }
+                    //If the replacement is a branch make its old spot a leaf
                     replacement is BinTree.Branch && t.root.car.hashCode() == replacement.root.car.hashCode() -> BinTree.Leaf
+                    //Trees are immutable. Rebuild a new tree from top down.
                     else -> BinTree(t.root, helper(t.left), helper(t.right))
                 }
             }

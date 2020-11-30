@@ -22,7 +22,7 @@ sealed class BinTree<out A>{
 
         operator fun <A> invoke() : BinTree<A> = Leaf
 
-        operator fun <A> invoke(data : A, left : BinTree<A>, right : BinTree<A>) : BinTree<A> = Branch(data, left, right)
+        operator fun <A> invoke(data : A, left :BinTree<A>, right : BinTree<A>) : BinTree<A> = Branch(data, left, right)
 
         operator fun <A> invoke(data : A) = Branch(data)
 
@@ -115,9 +115,21 @@ fun <A> BinTree<A>.isCompleteTree() = foldLevel(depth, 0){ _, acc ->
 fun <A, B> BinTree<A>.fold(order: BinTree.Order, b : B, acc : (A, B) -> B) : B = when(this){
     is BinTree.Leaf -> b
     is BinTree.Branch -> when(order){
-        BinTree.Order.PreOrder -> right.fold(order,left.fold(order, acc(root, b), acc), acc)
-        BinTree.Order.InOrder -> right.fold(order, acc(root, left.fold(order, b, acc)), acc)
-        BinTree.Order.PostOrder -> acc(root, right.fold(order, left.fold(order, b, acc), acc))
+        BinTree.Order.PreOrder -> {
+            val visitRoot = acc(root, b)
+            val visitLeft = left.fold(order, visitRoot, acc)
+            right.fold(order, visitLeft, acc)
+        }
+        BinTree.Order.InOrder -> {
+            val visitLeft = left.fold(order, b, acc)
+            val visitRoot = acc(root, visitLeft)
+            right.fold(order, visitRoot, acc)
+        }
+        BinTree.Order.PostOrder -> {
+            val visitLeft = left.fold(order, b, acc)
+            val visitRight = right.fold(order, visitLeft, acc)
+            acc(root, visitRight)
+        }
     }
 }
 
