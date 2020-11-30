@@ -15,7 +15,6 @@ sealed class LinkedList<out T> : Cons<T, LinkedList<T>> {
             else -> Node(args.first(), invoke(*args.sliceArray(1 until args.size)))
         }
         operator fun <T> invoke(head : T, tail : LinkedList<T> ) : LinkedList<T> = Node(head, tail)
-        operator fun <T> invoke(cons : Cons<T, LinkedList<T>>) : LinkedList<T> = Node(cons.car, cons.cdr)
         operator fun invoke(range : IntRange) : LinkedList<Int> = invoke(*range.toList().toTypedArray())
         operator fun invoke(progression: IntProgression) : LinkedList<Int> = invoke(*progression.toList().toTypedArray())
         operator fun <T> invoke() : LinkedList<T> = Empty

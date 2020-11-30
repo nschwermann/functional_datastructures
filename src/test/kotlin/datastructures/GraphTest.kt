@@ -80,4 +80,57 @@ class GraphTest {
         assertTrue(graph.hasPath(6.m(), 6.m()))
     }
 
+    @Test
+    fun findPathsDirected(){
+        val graph = Graph<Num>(directed = true).apply {
+            addEdge(0.m(), 1.m())
+            addEdge(0.m(), 4.m())
+            addEdge(0.m(), 5.m())
+            addEdge(1.m(), 4.m())
+            addEdge(1.m(), 3.m())
+            addEdge(2.m(), 1.m())
+            addEdge(3.m(), 2.m())
+            addEdge(3.m(), 4.m())
+            addEdge(6.m(), 6.m())
+        }
+        val result = graph.findPath(0.m(), 2.m())
+        val expected = LinkedList(0.m(),1.m(),3.m(),2.m())
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun findPathsUndirected(){
+        val graph = Graph<Num>(directed = false).apply {
+            addEdge(0.m(), 1.m())
+            addEdge(0.m(), 4.m())
+            addEdge(0.m(), 5.m())
+            addEdge(1.m(), 4.m())
+            addEdge(1.m(), 3.m())
+            addEdge(2.m(), 1.m())
+            addEdge(3.m(), 2.m())
+            addEdge(3.m(), 4.m())
+            addEdge(6.m(), 6.m())
+        }
+        val result = graph.findPath(0.m(), 2.m())
+        val expected = LinkedList(0.m(),1.m(),2.m())
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun noPathFound(){
+        val graph = Graph<Num>(directed = false).apply {
+            addEdge(0.m(), 1.m())
+            addEdge(0.m(), 4.m())
+            addEdge(0.m(), 5.m())
+            addEdge(1.m(), 4.m())
+            addEdge(1.m(), 3.m())
+            addEdge(2.m(), 1.m())
+            addEdge(3.m(), 2.m())
+            addEdge(3.m(), 4.m())
+            addEdge(6.m(), 6.m())
+        }
+        val result = graph.findPath(0.m(), 6.m())
+        assertEquals(LinkedList.Empty, result)
+    }
+
 }

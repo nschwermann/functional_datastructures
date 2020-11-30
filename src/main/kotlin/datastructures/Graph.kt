@@ -36,7 +36,7 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
         }
     }
 
-    fun hasPath(start: T, end : T) : Boolean{
+    fun hasPath(start: T, end : T) : Boolean {
         resetMeta()
         val queue = Queue<T>()
         queue.add(start)
@@ -50,6 +50,30 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
             }
         }
         return false
+    }
+
+    fun findPath(start : T, end : T) : LinkedList<T> {
+        resetMeta()
+        if(start == end) LinkedList((LinkedList(start, end)))
+        val que = Queue<Cons<T, LinkedList<T>>>()
+        que.add(start cons LinkedList.Empty)
+        while(que.peek() !is Option.None){
+            val next = que.remove().getOrThrow()
+            if(next.car.visited) {
+                continue
+            }
+            next.car.visited = true
+            val path = next.cdr.append(next.car)
+            if(next.car == end) return path
+            edges[next.car].forEach {
+                it.toTree().forEach { node ->
+                    if(!node.visited){
+                        que.add(node cons path)
+                    }
+                }
+            }
+        }
+        return LinkedList.Empty
     }
 
     override fun toString(): String {

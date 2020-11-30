@@ -21,3 +21,5 @@ interface Cons<out CAR, out CDR>{
     operator fun component2() : CDR = cdr
 
 }
+
+infix fun <CAR, CDR> CAR.cons(cdr : CDR) = Cons(this, cdr)
