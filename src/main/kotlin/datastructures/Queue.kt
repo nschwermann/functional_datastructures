@@ -25,4 +25,8 @@ class Queue<T>{
         return linkedList
     }
 
+    override fun toString(): String {
+        return linkedList.toString()
+    }
+
 }

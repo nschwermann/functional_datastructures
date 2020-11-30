@@ -1,9 +1,6 @@
 package datastructures
 
-import utils.Option
-import utils.getOrThrow
-import utils.map
-import utils.some
+import utils.*
 
 class Dictionary<KEY , VALUE>{
 
