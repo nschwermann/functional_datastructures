@@ -2,44 +2,33 @@ package datastructures
 
 import utils.*
 
-interface NodeMeta{
-    var visited : Boolean
-}
+class Graph<T>(private val directed : Boolean = false){
 
-data class Num(val int: Int, override var visited: Boolean = false) : NodeMeta{
-    override fun equals(other: Any?): Boolean {
-        return if(other is Num) int == other.int
-        else false
+    private inner class Node<T>(val data : T){
+        var visited : Boolean = false
+        override fun equals(other: Any?): Boolean = other?.equals(data) == true
+        override fun toString(): String = data.toString()
+        override fun hashCode() : Int = data.hashCode()
     }
 
-    override fun hashCode(): Int {
-        return int
-    }
+    private fun T.n() = Node(this)
 
-    override fun toString(): String {
-        return int.toString(10)
-    }
-}
-fun Int.m() : Num = Num(this, false)
-
-class Graph<T : NodeMeta>(private val directed : Boolean = false){
-
-    private val edges = Dictionary<T, HashSet<T>>()
+    private val edges = Dictionary<Node<T>, HashSet<Node<T>>>()
 
     fun addEdge(sourceVertex: T, destinationVertex: T) {
         // Add edge to source vertex / node.
-        edges[sourceVertex].getOrElse(HashSet()).insert(destinationVertex).also {
-            edges[sourceVertex] = it
+        edges[sourceVertex.n()].getOrElse(HashSet()).insert(destinationVertex.n()).also {
+            edges[sourceVertex.n()] = it
         }
-        if(!directed) edges[destinationVertex].getOrElse(HashSet()).insert(sourceVertex).also {
-            edges[destinationVertex] = it
+        if(!directed) edges[destinationVertex.n()].getOrElse(HashSet()).insert(sourceVertex.n()).also {
+            edges[destinationVertex.n()] = it
         }
     }
 
     fun hasPath(start: T, end : T) : Boolean {
         resetMeta()
-        val queue = Queue<T>()
-        queue.add(start)
+        val queue = Queue<Node<T>>()
+        queue.add(start.n())
         while(queue.peek() !is Option.None){
             val vert = queue.remove().getOrThrow()
             if(vert == end) return true
@@ -55,15 +44,15 @@ class Graph<T : NodeMeta>(private val directed : Boolean = false){
     fun findPath(start : T, end : T) : LinkedList<T> {
         resetMeta()
         if(start == end) LinkedList((LinkedList(start, end)))
-        val que = Queue<Cons<T, LinkedList<T>>>()
-        que.add(start cons LinkedList.Empty)
+        val que = Queue<Cons<Node<T>, LinkedList<T>>>()
+        que.add(start.n() cons LinkedList.Empty)
         while(que.peek() !is Option.None){
             val next = que.remove().getOrThrow()
             if(next.car.visited) {
                 continue
             }
             next.car.visited = true
-            val path = next.cdr.append(next.car)
+            val path = next.cdr.append(next.car.data)
             if(next.car == end) return path
             edges[next.car].forEach {
                 it.toTree().forEach { node ->

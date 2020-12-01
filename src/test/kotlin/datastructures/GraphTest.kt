@@ -8,11 +8,11 @@ class GraphTest {
 
     @Test
     fun directedEdgeString(){
-        val result = Graph<Num>(directed = true).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(1.m(), 2.m())
-            addEdge(2.m(), 3.m())
-            addEdge(3.m(), 1.m())
+        val result = Graph<Int>(directed = true).apply {
+            addEdge(0, 1)
+            addEdge(1, 2)
+            addEdge(2, 3)
+            addEdge(3, 1)
         }.toString().trimMargin()
         val expected = """
             0→[1]
@@ -25,11 +25,11 @@ class GraphTest {
 
     @Test
     fun undirectedEdgeString(){
-        val result = Graph<Num>(directed = false).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(1.m(), 2.m())
-            addEdge(2.m(), 3.m())
-            addEdge(3.m(), 1.m())
+        val result = Graph<Int>(directed = false).apply {
+            addEdge(0, 1)
+            addEdge(1, 2)
+            addEdge(2, 3)
+            addEdge(3, 1)
         }.toString().trimMargin()
         val expected = """
             0→[1]
@@ -42,95 +42,86 @@ class GraphTest {
 
     @Test
     fun hasPathDirected() {
-        val graph = Graph<Num>(directed = true).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(0.m(), 4.m())
-            addEdge(0.m(), 5.m())
-            addEdge(1.m(), 4.m())
-            addEdge(1.m(), 3.m())
-            addEdge(2.m(), 1.m())
-            addEdge(3.m(), 2.m())
-            addEdge(3.m(), 4.m())
-            addEdge(6.m(), 6.m())
+        val graph = Graph<Int>(directed = true).apply {
+            addEdge(0, 1)
+            addEdge(0, 4)
+            addEdge(0, 5)
+            addEdge(1, 4)
+            addEdge(1, 3)
+            addEdge(2, 1)
+            addEdge(3, 2)
+            addEdge(3, 4)
+            addEdge(6, 6)
         }
-        assertTrue(graph.hasPath(0.m(), 3.m()))
-        assertFalse(graph.hasPath(5.m(), 2.m()))
-        assertFalse(graph.hasPath(4.m(), 3.m()))
-        assertFalse(graph.hasPath(6.m(), 5.m()))
-        assertTrue(graph.hasPath(6.m(), 6.m()))
+        assertTrue(graph.hasPath(0, 3))
+        assertFalse(graph.hasPath(5, 2))
+        assertFalse(graph.hasPath(4, 3))
+        assertFalse(graph.hasPath(6, 5))
+        assertTrue(graph.hasPath(6, 6))
     }
 
     @Test
     fun hasPathUndirected() {
-        val graph = Graph<Num>(directed = false).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(0.m(), 4.m())
-            addEdge(0.m(), 5.m())
-            addEdge(1.m(), 4.m())
-            addEdge(1.m(), 3.m())
-            addEdge(2.m(), 1.m())
-            addEdge(3.m(), 2.m())
-            addEdge(3.m(), 4.m())
-            addEdge(6.m(), 6.m())
+        val graph = Graph<Int>(directed = false).apply {
+            addEdge(0, 1)
+            addEdge(0, 4)
+            addEdge(0, 5)
+            addEdge(1, 4)
+            addEdge(1, 3)
+            addEdge(2, 1)
+            addEdge(3, 2)
+            addEdge(3, 4)
+            addEdge(6, 6)
         }
-        assertTrue(graph.hasPath(0.m(), 3.m()))
-        assertTrue(graph.hasPath(5.m(), 2.m()))
-        assertTrue(graph.hasPath(4.m(), 3.m()))
-        assertFalse(graph.hasPath(6.m(), 5.m()))
-        assertTrue(graph.hasPath(6.m(), 6.m()))
+        assertTrue(graph.hasPath(0, 3))
+        assertTrue(graph.hasPath(5, 2))
+        assertTrue(graph.hasPath(4, 3))
+        assertFalse(graph.hasPath(6, 5))
+        assertTrue(graph.hasPath(6, 6))
     }
 
     @Test
     fun findPathsDirected(){
-        val graph = Graph<Num>(directed = true).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(0.m(), 4.m())
-            addEdge(0.m(), 5.m())
-            addEdge(1.m(), 4.m())
-            addEdge(1.m(), 3.m())
-            addEdge(2.m(), 1.m())
-            addEdge(3.m(), 2.m())
-            addEdge(3.m(), 4.m())
-            addEdge(6.m(), 6.m())
+        val graph = Graph<Int>(directed = true).apply {
+            addEdge(0, 1)
+            addEdge(0, 4)
+            addEdge(0, 5)
+            addEdge(1, 4)
+            addEdge(1, 3)
+            addEdge(2, 1)
+            addEdge(3, 2)
+            addEdge(3, 4)
+            addEdge(6, 6)
         }
-        val result = graph.findPath(0.m(), 2.m())
-        val expected = LinkedList(0.m(),1.m(),3.m(),2.m())
-        assertEquals(expected, result)
+
+        assertEquals(LinkedList(0,1,3,2), graph.findPath(0,2))
+        assertEquals(LinkedList(0,5), graph.findPath(0,5))
+        assertEquals(LinkedList(0,4), graph.findPath(0,4))
+        assertEquals(LinkedList(0,1,3), graph.findPath(0,3))
+        assertEquals(LinkedList.Empty, graph.findPath(4,3))
     }
 
     @Test
     fun findPathsUndirected(){
-        val graph = Graph<Num>(directed = false).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(0.m(), 4.m())
-            addEdge(0.m(), 5.m())
-            addEdge(1.m(), 4.m())
-            addEdge(1.m(), 3.m())
-            addEdge(2.m(), 1.m())
-            addEdge(3.m(), 2.m())
-            addEdge(3.m(), 4.m())
-            addEdge(6.m(), 6.m())
+        val graph = Graph<Int>(directed = false).apply {
+            addEdge(0, 1)
+            addEdge(0, 4)
+            addEdge(0, 5)
+            addEdge(1, 4)
+            addEdge(1, 3)
+            addEdge(2, 1)
+            addEdge(3, 2)
+            addEdge(3, 4)
+            addEdge(6, 6)
         }
-        val result = graph.findPath(0.m(), 2.m())
-        val expected = LinkedList(0.m(),1.m(),2.m())
-        assertEquals(expected, result)
-    }
 
-    @Test
-    fun noPathFound(){
-        val graph = Graph<Num>(directed = false).apply {
-            addEdge(0.m(), 1.m())
-            addEdge(0.m(), 4.m())
-            addEdge(0.m(), 5.m())
-            addEdge(1.m(), 4.m())
-            addEdge(1.m(), 3.m())
-            addEdge(2.m(), 1.m())
-            addEdge(3.m(), 2.m())
-            addEdge(3.m(), 4.m())
-            addEdge(6.m(), 6.m())
-        }
-        val result = graph.findPath(0.m(), 6.m())
-        assertEquals(LinkedList.Empty, result)
+        assertEquals(LinkedList(0,1,2), graph.findPath(0,2))
+        assertEquals(LinkedList(0,5), graph.findPath(0,5))
+        assertEquals(LinkedList(0,4), graph.findPath(0,4))
+        assertEquals(LinkedList(0,1,3), graph.findPath(0,3))
+        assertEquals(LinkedList(4,3), graph.findPath(4,3))
+        assertEquals(LinkedList(5,0,1,2), graph.findPath(5,2))
+        assertEquals(LinkedList(5,0,1,3), graph.findPath(5,3))
     }
 
 }
