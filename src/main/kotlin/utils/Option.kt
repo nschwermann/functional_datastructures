@@ -46,6 +46,8 @@ fun <A> Option<A>.getOrThrow() : A = orElse {
     throw IllegalStateException()
 }
 
+fun <A> Option<A>.getOrNull() : A? = orElse { null }
+
 fun <A> Option<A>.filter(pred : (A) -> Boolean) : Option<A> = fMap {
     if(pred(it)) this else Option.None
 }

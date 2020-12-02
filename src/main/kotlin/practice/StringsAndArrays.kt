@@ -76,3 +76,20 @@ fun String.isRotation(other : String) : Boolean{
         false
     }
 }
+
+
+
+//a is always double size of b and both are in order.
+//Merge without extra space.
+fun mergeArrays(a : IntArray, b : IntArray){
+
+    var loc = a.size - 1
+    var aIndex = b.size -1
+    var bIndex = b.size - 1
+    while(loc != 0){
+        a[loc] = when{
+            a[aIndex] <= b[bIndex] -> b[bIndex].also{bIndex--}
+            else -> a[aIndex].also{ aIndex-- }
+        }.also { loc--}
+    }
+}
