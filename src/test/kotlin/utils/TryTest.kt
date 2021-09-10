@@ -2,6 +2,8 @@ package utils
 
 import org.junit.Assert.*
 import org.junit.Test
+import kotlin.math.exp
+import kotlin.test.assertFailsWith
 
 class TryTest{
 
@@ -13,11 +15,8 @@ class TryTest{
         }
         assertTrue(t is Try.Fail)
         assertTrue(t.isFail())
-        try{
+        assertFailsWith<RuntimeException>(myMessage){
             t.getOrThrow()
-        }catch (e : Exception){
-            assertTrue(e is RuntimeException)
-            assertEquals(myMessage, e.message)
         }
     }
 
@@ -47,5 +46,52 @@ class TryTest{
             1
         }
         assertTrue(t is Try.Fail)
+    }
+
+    @Test
+    fun filterNull(){
+        val isNull = Try<Int?>{
+            null
+        }.getOrThrow()
+        assertEquals(null, null, isNull)
+        val isNotNull = Try<Int?>{
+            null
+        }.filterNull()
+        assertFailsWith<NullPointerException> {
+            isNotNull.getOrThrow()
+        }
+    }
+
+    @Test
+    fun getOrDefault(){
+        val expected = 1
+        val result = Try<Int>{
+            throw Exception()
+        }.getOrDefault(expected)
+        assertEquals(null, expected, result)
+    }
+
+    @Test
+    fun onSuccess(){
+        var count = 0
+        Try{}.onSuccess { count++ }
+        Try{throw Exception()}.onSuccess { count++ }
+        assertEquals(null, 1, count)
+    }
+
+    @Test
+    fun onFail(){
+        var count = 0
+        Try{}.onFail { count++ }
+        Try{throw Exception()}.onFail { count++ }
+        assertEquals(null, 1, count)
+    }
+
+    @Test
+    fun finally(){
+        var count = 0
+        Try{}.finally { count++ }
+        Try{throw Exception()}.finally { count++ }
+        assertEquals(null, 2, count)
     }
 }

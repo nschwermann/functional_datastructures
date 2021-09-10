@@ -6,8 +6,7 @@ sealed class Try<out T> {
     data class Success<T>(val data : T) : Try<T>()
 
     companion object{
-        operator fun <T> invoke(f : () -> T) : Try<T> = try { Success(f()) } catch (e : Throwable) { Fail(e)
-        }
+        inline operator fun <T> invoke(f : () -> T) : Try<T> = try { Success(f()) } catch (e : Throwable) { Fail(e) }
     }
 
     fun isSuccess() : Boolean = this is Success
@@ -18,15 +17,53 @@ sealed class Try<out T> {
         is Fail -> throw throwable
     }
 
-    inline fun <R> map(crossinline f : (T) -> R) : Try<R> = when(this){
-        is Fail -> this
-        is Success -> Try{f(data)}
+    fun getOrDefault(default : @UnsafeVariance T) : T = when(this) {
+        is Success -> data
+        is Fail -> default
     }
 
-    inline fun <R> fMap(crossinline f : (T) -> Try<R>) : Try<R> = when(this){
-        is Fail -> this
-        is Success -> Try{f(data).getOrThrow()}
+    inline fun <R> map(f : (T) -> R) : Try<R> = try {
+        when(this){
+            is Success -> Success(f(data))
+            is Fail -> this
+        }
+
+    }catch (t : Throwable){
+        t.asTry()
     }
+
+    inline fun <R> fMap(f : (T) -> Try<R>) : Try<R> = try {
+        val next : Try<R> = when(this){
+            is Success -> f(data)
+            is Fail -> this
+        }
+        next
+    }catch (t : Throwable){
+        t.asTry()
+    }
+
+    inline fun onSuccess(ifSuccess : (T) -> Unit) : Try<T> = try{
+        if(this is Success) ifSuccess(data)
+        this
+    }catch (t : Throwable){
+        t.asTry()
+    }
+
+    inline fun onFail(ifFail : (Throwable) -> Unit) : Try<T> = try{
+        when(this){
+            is Success -> this
+            is Fail -> {
+                ifFail(throwable)
+                this
+            }
+        }
+    }catch (t : Throwable){
+        t.asTry()
+    }
+
+    inline fun finally(block : () -> Unit) : Try<T> = Try {
+        block()
+    }.fMap { this }
 
     override fun equals(other: Any?): Boolean {
         return when{
@@ -43,9 +80,7 @@ sealed class Try<out T> {
     }
 }
 
-fun <T> Try<T>.get() : Option<T> = when(this){
-    is Try.Success -> Option.Some(data)
-    else -> Option.None
-}
 
-inline fun <T> Throwable.asTry() : Try<T> = Try.Fail(this)
+fun <T> Throwable.asTry() : Try<T> = Try.Fail(this)
+
+fun <T> Try<T?>.filterNull() : Try<T> = this.map { it!! }
